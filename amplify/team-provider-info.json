@@ -1,0 +1,18 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-expopulsemonitor-dev-153837-authRole",
+            "UnauthRoleArn": "arn:aws:iam::325411838786:role/amplify-expopulsemonitor-dev-153837-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::325411838786:role/amplify-expopulsemonitor-dev-153837-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-expopulsemonitor-dev-153837-deployment",
+            "UnauthRoleName": "amplify-expopulsemonitor-dev-153837-unauthRole",
+            "StackName": "amplify-expopulsemonitor-dev-153837",
+            "StackId": "arn:aws:cloudformation:us-east-1:325411838786:stack/amplify-expopulsemonitor-dev-153837/cbb6d170-ea63-11eb-a35b-0ebd71830845",
+            "AmplifyAppId": "d2drvgzir5ercd"
+        },
+        "categories": {
+            "hosting": {}
+        }
+    }
+}
