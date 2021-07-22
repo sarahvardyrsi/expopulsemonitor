@@ -14,5 +14,26 @@
         "categories": {
             "hosting": {}
         }
+    },
+    "coolpulse": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-expopulsemonitor-coolpulse-75850-authRole",
+            "UnauthRoleArn": "arn:aws:iam::325411838786:role/amplify-expopulsemonitor-coolpulse-75850-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::325411838786:role/amplify-expopulsemonitor-coolpulse-75850-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-expopulsemonitor-coolpulse-75850-deployment",
+            "UnauthRoleName": "amplify-expopulsemonitor-coolpulse-75850-unauthRole",
+            "StackName": "amplify-expopulsemonitor-coolpulse-75850",
+            "StackId": "arn:aws:cloudformation:us-east-1:325411838786:stack/amplify-expopulsemonitor-coolpulse-75850/bb6d5c60-eaec-11eb-9795-0ecdc090d557",
+            "AmplifyAppId": "d3r5ypf6by9oe1"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "d3r5ypf6by9oe1",
+                    "type": "manual"
+                }
+            }
+        }
     }
 }

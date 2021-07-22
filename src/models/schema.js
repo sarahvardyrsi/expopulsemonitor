@@ -1,7 +1,7 @@
 export const schema = {
     "models": {
-        "Todo": {
-            "name": "Todo",
+        "PulseRead": {
+            "name": "PulseRead",
             "fields": {
                 "id": {
                     "name": "id",
@@ -17,8 +17,8 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "description": {
-                    "name": "description",
+                "data": {
+                    "name": "data",
                     "isArray": false,
                     "type": "String",
                     "isRequired": false,
@@ -42,7 +42,7 @@ export const schema = {
                 }
             },
             "syncable": true,
-            "pluralName": "Todos",
+            "pluralName": "PulseReads",
             "attributes": [
                 {
                     "type": "model",

@@ -2,33 +2,41 @@ import React from "react"
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native"
 
 import Amplify from "aws-amplify"
-import config from "./aws-exports"
+import { DataStore } from '@aws-amplify/datastore';
+import { PulseRead } from './src/models';
+import config from './src/aws-exports'
+
+import { v4 as uuidv4 } from 'uuid'; 
+import { usb } from 'usb';	
 
 Amplify.configure(config)
 
 export default class App extends React.Component {
 	state = {
 		name: "",
-		todos: []
+		pulses: []
 	}
 
 	onChangeText = (key, val) => {
 		this.setState({ [key]: val })
 	}
 
-	addTodo = () => {}
+	addPulse = async () => {
+		console.log(usb.getDeviceList());
+		const uuidtest = uuidv4();
+		await DataStore.save(
+			new PulseRead({
+			"name": uuidtest,
+			"data": "1000101010100101"
+		})
+	);
+	}
 
 	render() {
 		return (
 			<View style={styles.container}>
-				<TextInput
-					style={styles.input}
-					value={this.state.name}
-					onChangeText={val => this.onChangeText("name", val)}
-					placeholder='Add a Todo'
-				/>
-				<TouchableOpacity onPress={this.addTodo} style={styles.buttonContainer}>
-					<Text style={styles.buttonText}>Add +</Text>
+				<TouchableOpacity onPress={this.addPulse} style={styles.buttonContainer}>
+					<Text style={styles.buttonText}>Start pulse read +</Text>
 				</TouchableOpacity>
 			</View>
 		)

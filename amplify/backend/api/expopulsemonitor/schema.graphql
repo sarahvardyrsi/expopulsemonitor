@@ -1,5 +1,5 @@
-type Todo @model {
+type PulseRead @model {
   id: ID!
   name: String!
-  description: String
+  data: String
 }

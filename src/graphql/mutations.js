@@ -1,43 +1,43 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const createTodo = /* GraphQL */ `
-  mutation CreateTodo(
-    $input: CreateTodoInput!
-    $condition: ModelTodoConditionInput
+export const createPulseRead = /* GraphQL */ `
+  mutation CreatePulseRead(
+    $input: CreatePulseReadInput!
+    $condition: ModelPulseReadConditionInput
   ) {
-    createTodo(input: $input, condition: $condition) {
+    createPulseRead(input: $input, condition: $condition) {
       id
       name
-      description
+      data
       createdAt
       updatedAt
     }
   }
 `;
-export const updateTodo = /* GraphQL */ `
-  mutation UpdateTodo(
-    $input: UpdateTodoInput!
-    $condition: ModelTodoConditionInput
+export const updatePulseRead = /* GraphQL */ `
+  mutation UpdatePulseRead(
+    $input: UpdatePulseReadInput!
+    $condition: ModelPulseReadConditionInput
   ) {
-    updateTodo(input: $input, condition: $condition) {
+    updatePulseRead(input: $input, condition: $condition) {
       id
       name
-      description
+      data
       createdAt
       updatedAt
     }
   }
 `;
-export const deleteTodo = /* GraphQL */ `
-  mutation DeleteTodo(
-    $input: DeleteTodoInput!
-    $condition: ModelTodoConditionInput
+export const deletePulseRead = /* GraphQL */ `
+  mutation DeletePulseRead(
+    $input: DeletePulseReadInput!
+    $condition: ModelPulseReadConditionInput
   ) {
-    deleteTodo(input: $input, condition: $condition) {
+    deletePulseRead(input: $input, condition: $condition) {
       id
       name
-      description
+      data
       createdAt
       updatedAt
     }
