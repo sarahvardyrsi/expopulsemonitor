@@ -7,44 +7,16 @@ import { PulseRead } from './src/models';
 import config from './src/aws-exports'
 import { v4 as uuidv4 } from 'uuid'; 
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-//import { SerialPort } from 'serialport';
-
-//import { SerialPort, Readline } from "serialport";
-//import { Readline } from '@serialport/parser-readline';
-import SerialPortAPI from 'react-native-serial-port-api';
-//import {usb} from 'usb';
-//import SerialPort from "serialport";
-//import { SerialPort } from 'serialport';
-//var usb = require('usb')
-/*
-const SerialPort = require('serialport')
-const port = new SerialPort('/dev/tty-usbserial1', {
-  baudRate: 9600
-})*/
-
-// Read data that is available but keep the stream in "paused mode"
-/*port.on('readable', function () {
-  console.log('Data:', port.read())
-})
-
-// Switches the port into "flowing mode"
-port.on('data', function (data) {
-  console.log('Data:', data)
-})
-
-// Pipe the data into another stream (like a parser or standard out)
-const lineStream = port.pipe(new Readline())*/
 
 Amplify.configure(config)
 
-var client = new W3CWebSocket('ws://localhost:8080/', 'echo-protocol');
-
-
+var client = new W3CWebSocket('ws://localhost:8999/', 'echo-protocol');
 export default class App extends React.Component {
 	state = {
 		name: "",
 		pulses: [],
-		echo: ''
+		echo: '',
+		heartbeat: ''
 	}
 
 	onChangeText = (key, val) => {
@@ -62,71 +34,51 @@ export default class App extends React.Component {
 	}
 
 	getPulseMonitorData = async () => {
-		console.log('You getting data');
-		const portpath = 'USB\\VID_2341&amp;PID_0043\\850363135303510131C2';
-		console.log(portpath);
-		try {
-			const serialPort = await SerialPortAPI.open(portpath, { baudRate: 9600 });
-			// subscribe received data
-			const sub = serialPort.onReceived(buff => {
-				console.log(buff.toString('hex').toUpperCase());
-			})
-			// close
-			serialPort.close();
-	} catch (err) {
-		console.log('could not get port ' + err);
-	}
+		console.log('Lets get some data from that socket');
 	}
 
 	componentDidMount() {
 		client.onopen = function() {
-    console.log('WebSocket Client Connected');
-
-      function sendNumber() {
-        if (client.readyState === client.OPEN) {
-            var number = Math.round(Math.random() * 0xFFFFFF);
-            client.send(number.toString());
-            setTimeout(sendNumber, 1000);
-        }
-      }
-      sendNumber();
+    	console.log('WebSocket Client Connected');
     };
 
     client.onclose = function() {
       console.log('echo-protocol Client Closed');
     };
 
-    client.onmessage = function(e) {
-        if (typeof e.data === 'string') {
-          console.log("Received: '" + e.data + "'");
-        }
-    };
+    client.onmessage = ({data}) => {
+      console.log(data);
+			this.setState({heartbeat: data});
 
+			setTimeout(() => {
+				client.send('heartbeat');
+			}, 1000);
+    };
 		var socket = new WebSocket('wss://echo.websocket.org/');
 
 		socket.onopen = () => socket.send(new Date().toGMTString());
 
 		socket.onmessage = ({data}) => {
-				console.log(data);
-
 				this.setState({echo: data});
-
 				setTimeout(() => {
 						socket.send(new Date().toGMTString());
-				}, 3000);
+				}, 1000);
 		}
 }
 
 	render() {
 		return (
 			<View style={styles.container}>
+				<Text>Date: {this.state.echo}</Text>
 				<TouchableOpacity onPress={this.addPulse} style={styles.buttonContainer}>
 					<Text style={styles.buttonText}>Start pulse read +</Text>
+					
 				</TouchableOpacity>
-				<Text>websocket echo: {this.state.echo}</Text>
+				
 				<TouchableOpacity onPress={this.getPulseMonitorData} style={styles.buttonContainer}>
 					<Text style={styles.buttonText}>Get Pulse Data +</Text>
 				</TouchableOpacity>
+				<Text>Heartbeat: {this.state.heartbeat}</Text>
 			</View>
 		)
 	}
