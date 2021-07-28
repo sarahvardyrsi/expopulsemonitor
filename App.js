@@ -1,40 +1,61 @@
-import React from "react"
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native"
-
+import React, { useRef, useEffect } from "react"
+import { Animated, StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native"
 import Amplify from "aws-amplify"
 import { DataStore } from '@aws-amplify/datastore';
 import { PulseRead } from './src/models';
 import config from './src/aws-exports'
 import { v4 as uuidv4 } from 'uuid'; 
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import * as Animatable from 'react-native-animatable';
 
 Amplify.configure(config)
 
 var client = new W3CWebSocket('ws://localhost:8999/', 'echo-protocol');
+
+var pulses = [];
 export default class App extends React.Component {
 	state = {
 		name: "",
-		pulses: [],
 		echo: '',
-		heartbeat: ''
+		heartbeat: '', 
+		recording: false
 	}
+
 
 	onChangeText = (key, val) => {
 		this.setState({ [key]: val })
 	}
 
-	addPulse = async () => {
+	recordPulse = async () => {
+		this.setState({recording: true})
+		setTimeout(() => {
+			this.setState({recording: false});
+		}, 30000);
+		
+    client.onmessage = ({data}) => {
+      console.log(data);
+			this.setState({heartbeat: data});
+			this.addPulse(data);
+    };
+	}
+
+	addPulse = async (beat) => {
+		pulses.push(beat);
+		console.log('number of pulses ' + pulses.length);
+		if (pulses.length > 1 && this.state.recording == false) {
 		const uuidtest = uuidv4();
-		await DataStore.save(
-			new PulseRead({
-			"name": uuidtest,
-			"data": "1000101010100101"
-		})
-	);
+			await DataStore.save(
+				new PulseRead({
+				"name": uuidtest,
+				"data": pulses.toString()
+			})
+		);
+		}
 	}
 
 	getPulseMonitorData = async () => {
 		console.log('Lets get some data from that socket');
+	
 	}
 
 	componentDidMount() {
@@ -46,14 +67,11 @@ export default class App extends React.Component {
       console.log('echo-protocol Client Closed');
     };
 
-    client.onmessage = ({data}) => {
+		/*client.onmessage = ({data}) => {
       console.log(data);
+			//pulses.push(data);
 			this.setState({heartbeat: data});
-
-			setTimeout(() => {
-				client.send('heartbeat');
-			}, 1000);
-    };
+    };*/
 		var socket = new WebSocket('wss://echo.websocket.org/');
 
 		socket.onopen = () => socket.send(new Date().toGMTString());
@@ -70,15 +88,20 @@ export default class App extends React.Component {
 		return (
 			<View style={styles.container}>
 				<Text>Date: {this.state.echo}</Text>
-				<TouchableOpacity onPress={this.addPulse} style={styles.buttonContainer}>
-					<Text style={styles.buttonText}>Start pulse read +</Text>
-					
-				</TouchableOpacity>
-				
+				{ this.state.recording ? null : <TouchableOpacity onPress={this.recordPulse} style={styles.buttonContainer}>
+					<Text style={styles.buttonText}>Start pulse recording +</Text> ? 
+				</TouchableOpacity> }
+				{ this.state.recording ? 	<Animatable.Text 
+					animation="pulse" 
+					easing="ease-in" 
+					iterationCount="infinite" 
+					style={{ textAlign: 'center' }}>
+				❤️ Recording
+				</Animatable.Text> : null }
 				<TouchableOpacity onPress={this.getPulseMonitorData} style={styles.buttonContainer}>
 					<Text style={styles.buttonText}>Get Pulse Data +</Text>
 				</TouchableOpacity>
-				<Text>Heartbeat: {this.state.heartbeat}</Text>
+				<Text>Your BPM {this.state.heartbeat}</Text>
 			</View>
 		)
 	}
