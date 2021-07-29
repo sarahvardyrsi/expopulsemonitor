@@ -4,7 +4,7 @@ import Amplify from "aws-amplify"
 import { DataStore } from '@aws-amplify/datastore';
 import { PulseRead } from './src/models';
 import config from './src/aws-exports'
-import { v4 as uuidv4 } from 'uuid'; 
+import { v4 as uuidv4 } from 'uuid';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import * as Animatable from 'react-native-animatable';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,13 +14,14 @@ Amplify.configure(config)
 var client = new W3CWebSocket('ws://localhost:8999/', 'echo-protocol');
 
 var pulses = [];
-
+//var recordings = [];
 export default class App extends React.Component {
 	state = {
 		name: "",
 		echo: '',
 		heartbeat: '',
-		recording: false
+		recording: false,
+		recordingslist: ''
 	}
 
 	onChangeText = (key, val) => {
@@ -55,8 +56,9 @@ export default class App extends React.Component {
 
 	getPulseMonitorData = async () => {
 		console.log('Lets get some data from graphql');
-		const models = await DataStore.query(PulseRead);
-		console.log(models);
+		const recordings = await DataStore.query(PulseRead);
+		//console.log(models);
+		this.setState({recordingslist: JSON.stringify(recordings)});
 	}
 
 	componentDidMount() {
@@ -107,6 +109,7 @@ export default class App extends React.Component {
 				<Animatable.View animation="pulse" easing="ease-in" iterationCount="infinite" style={{ textAlign: 'center' }}>
         <Text>Your BPM {this.state.heartbeat}</Text><Ionicons name="md-heart" size={32} color="red" />
       </Animatable.View>
+			<Text>{this.state.recordingslist}</Text>
 			</View>
 		)
 	}
