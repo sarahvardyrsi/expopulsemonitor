@@ -29,8 +29,18 @@ export default class App extends React.Component {
 	}
 	recordPulse = async () => {
 		this.setState({recording: true})
-		setTimeout(() => {
+		setTimeout(async() => {
 			this.setState({recording: false});
+			if (pulses.length > 0) {
+				const uuidtest = uuidv4();
+					await DataStore.save(
+						new PulseRead({
+						"name": uuidtest,
+						"data": pulses.toString()
+					})
+				);
+				pulses = [];
+			}
 		}, 30000);
     client.onmessage = ({data}) => {
       console.log(data);
@@ -42,23 +52,18 @@ export default class App extends React.Component {
 	addPulse = async (beat) => {
 		pulses.push(beat);
 		console.log('number of pulses ' + pulses.length);
-		if (pulses.length > 1 && this.state.recording == false) {
-			const uuidtest = uuidv4();
-				await DataStore.save(
-					new PulseRead({
-					"name": uuidtest,
-					"data": pulses.toString()
-				})
-			);
-			pulses = [];
-		}
 	}
 
 	getPulseMonitorData = async () => {
 		console.log('Lets get some data from graphql');
 		const recordings = await DataStore.query(PulseRead);
-		//console.log(models);
-		this.setState({recordingslist: JSON.stringify(recordings)});
+		recordings.reverse();
+		var heartbeatdata = recordings.map((sglheartbeat) =>{
+			return (
+				<Text>BPM: { sglheartbeat.data }</Text>
+			)
+		})
+		this.setState({recordingslist: heartbeatdata});
 	}
 
 	componentDidMount() {
@@ -92,6 +97,9 @@ export default class App extends React.Component {
 	render() {
 		return (
 			<View style={styles.container}>
+				<Animatable.View animation="pulse" easing="ease-in" iterationCount="infinite" style={{ textAlign: 'center' }}>
+        <Text>{this.state.heartbeat}</Text><Ionicons name="md-heart" size={112} color="green" />
+      </Animatable.View>
 				{ this.state.recording ? null : <TouchableOpacity onPress={this.recordPulse} style={styles.buttonContainer}>
 					<Text style={styles.buttonText}>Start pulse recording +</Text>
 				</TouchableOpacity> }
@@ -101,14 +109,10 @@ export default class App extends React.Component {
 					iterationCount="infinite" 
 					style={{ textAlign: 'center' }}>
 				❤️ Recording
-				<Ionicons name="md-heart" size={32} color="red" />
 				</Animatable.Text> : null }
 				<TouchableOpacity onPress={this.getPulseMonitorData} style={styles.buttonContainer}>
 					<Text style={styles.buttonText}>Get Pulse Data +</Text>
 				</TouchableOpacity>
-				<Animatable.View animation="pulse" easing="ease-in" iterationCount="infinite" style={{ textAlign: 'center' }}>
-        <Text>Your BPM {this.state.heartbeat}</Text><Ionicons name="md-heart" size={32} color="red" />
-      </Animatable.View>
 			<Text>{this.state.recordingslist}</Text>
 			</View>
 		)
